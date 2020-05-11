@@ -50,7 +50,7 @@ class BrunchForm extends React.Component {
   async getList(){
     const response = await axios.get('/api/workapi', {
       proxy: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 3000,
       }
     });
@@ -70,7 +70,7 @@ class BrunchForm extends React.Component {
         status
       },
       proxy: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 3000,
       }
     }).then(function(res){
