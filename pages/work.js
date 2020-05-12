@@ -1,10 +1,9 @@
 var React = require("react");
 import axios from 'axios'
 
-export async function getStaticProps() {
+/* export async function getStaticProps() {
   const response = await axios.get('/api/workapi', {
     proxy: {
-      host: '127.0.0.1',
       port: 3000,
     }
   });
@@ -15,7 +14,7 @@ export async function getStaticProps() {
         data
       }// will be passed to the page component as props
   }
-}
+} */
 
 
 class BrunchForm extends React.Component {
@@ -50,7 +49,6 @@ class BrunchForm extends React.Component {
   async getList(){
     const response = await axios.get('/api/workapi', {
       proxy: {
-        host: 'localhost',
         port: 3000,
       }
     });
@@ -70,7 +68,6 @@ class BrunchForm extends React.Component {
         status
       },
       proxy: {
-        host: 'localhost',
         port: 3000,
       }
     }).then(function(res){
@@ -119,7 +116,7 @@ class BrunchForm extends React.Component {
 
 }
 
-export default function Work({data}) {//, data
+export default function Work() {//, data
 
   return (
     <>
