@@ -16,6 +16,7 @@ import axios from 'axios'
   }
 } */
 
+const PORT = 3000;
 
 class BrunchForm extends React.Component {
   constructor(props){
@@ -49,7 +50,7 @@ class BrunchForm extends React.Component {
   async getList(){
     const response = await axios.get('/api/workapi', {
       proxy: {
-        port: 3000,
+        port: PORT,
       }
     });
     const data = response.data.data;
@@ -61,14 +62,14 @@ class BrunchForm extends React.Component {
   updateList(e, brunchid, memberid){
     let status = e.currentTarget.getAttribute("data-status")== this.STATUS.OFF? this.STATUS.ON : this.STATUS.OFF;
     let self = this;
-    const response = axios.get('/api/workapi', {
+    axios.get('/api/workapi', {
       params:{
         brunchid,
         memberid,
         status
       },
       proxy: {
-        port: 3000,
+        port: PORT,
       }
     }).then(function(res){
       self.setState({list: res.data.data.result});
@@ -116,11 +117,59 @@ class BrunchForm extends React.Component {
 
 }
 
+
+
+class EmailForm extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      enterstr: ''
+    }
+    this.send = this.send.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) { this.setState({enterstr: event.target.value});  }
+
+  componentDidMount(){}
+
+  send(){
+    let content = this.state.enterstr;
+    axios.get('/api/email', {
+      params:{
+        action: 'send',
+        content: content,
+      },
+      proxy: {
+        port: PORT,
+      }
+    }).then(function(res){
+      console.log('success############');
+    }).catch(function(err){
+      console.log('fail############');
+      console.log(err);
+    });
+  }
+
+  render(){
+    return(
+      <>
+        <div><textarea value={this.state.enterstr} onChange={this.handleChange} /></div>
+        <button className="email_btn" onClick={(e)=>this.send(e)}>Send a email</button>
+      </>
+      
+    )
+  }
+
+}
+
 export default function Work() {//, data
 
   return (
     <>
       <link rel="stylesheet" href="/style.css" />
+      <EmailForm />
+      <div className="email_space"></div>
       <BrunchForm />
     </>
   )
