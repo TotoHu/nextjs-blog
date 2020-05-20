@@ -16,7 +16,7 @@ import axios from 'axios'
   }
 } */
 
-const PORT = 3000;
+const PORT = 80;
 
 class BrunchForm extends React.Component {
   constructor(props){
@@ -87,6 +87,7 @@ class BrunchForm extends React.Component {
       <>
         {this.state.isLoading?
         <ul className="list">
+          <li className="tit">Deploy Usage Table</li>
           <li className="item">
             <span className="label"></span>
             {this.members.map( ({id, name}) => (
@@ -123,28 +124,42 @@ class EmailForm extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      enterstr: ''
+      enterstr: '',
+      pwd:'',
+      result: '',
+      addr:'',
     }
     this.send = this.send.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) { this.setState({enterstr: event.target.value});  }
+  handleChange(event, idstr) { 
+    this.setState({ [idstr]: event.target.value});  
+  }
 
   componentDidMount(){}
 
   send(){
+    let self = this;
+    self.setState({ result: 'Processing...' })
     let content = this.state.enterstr;
-    axios.get('/api/email', {
+    let pwd = this.state.pwd;
+    let addr = this.state.addr;
+    axios.post('/api/email', {
       params:{
         action: 'send',
-        content: content,
+        content,
+        pwd,
+        addr
       },
       proxy: {
         port: PORT,
       }
     }).then(function(res){
-      console.log('success############');
+      if(res.data.result == 'Y'){
+        self.setState({ result: 'Done!' })
+      }
+      console.log(res.data.result);
     }).catch(function(err){
       console.log('fail############');
       console.log(err);
@@ -154,8 +169,14 @@ class EmailForm extends React.Component {
   render(){
     return(
       <>
-        <div><textarea value={this.state.enterstr} onChange={this.handleChange} /></div>
-        <button className="email_btn" onClick={(e)=>this.send(e)}>Send a email</button>
+        <p className="email_head">Send Email</p>
+        <p className="email_tit">* Paste your code to below and simply click "Send"</p>
+        <div><textarea className="email_txt" value={this.state.enterstr} placeholder="paste your html here" onChange={(e)=>this.handleChange(e, 'enterstr')} /></div>
+        <p className="email_tit">Test email addresses (eg: test1@test.com, test2@test.com)</p>
+        <div><input className="email_receiver" type="text" placeholder="test1@test.com, test2@test.com" value={this.state.addr} onChange={(e)=>this.handleChange(e, 'addr')} /></div>
+        <p className="email_tit">* Enter your security code and send</p>
+        <div><input className="email_pwd" type="password" placeholder="Security Code" value={this.state.pwd} onChange={(e)=>this.handleChange(e, 'pwd')} /><button className="email_btn" onClick={(e)=>this.send(e)}>Send a email</button><span className="email_result">{this.state.result}</span></div>
+        
       </>
       
     )
@@ -170,6 +191,7 @@ export default function Work() {//, data
       <link rel="stylesheet" href="/style.css" />
       <EmailForm />
       <div className="email_space"></div>
+      
       <BrunchForm />
     </>
   )
